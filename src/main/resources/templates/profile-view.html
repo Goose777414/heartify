@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Перегляд профілю</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+        }
+        .profile-card {
+            max-width: 400px;
+            margin: 50px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        h2 {
+            margin-bottom: 20px;
+        }
+        p {
+            margin: 10px 0;
+        }
+        a.button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #6392f1;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+        }
+        a.button:hover {
+            background-color: #5c8ee5;
+        }
+    </style>
+</head>
+<body>
+
+<div class="profile-card">
+    <h2 th:text="${profile.name}">Ім'я</h2>
+    <p><strong>Вік:</strong> <span th:text="${profile.age}">Вік</span></p>
+    <p><strong>Місто:</strong> <span th:text="${profile.city}">Місто</span></p>
+    <p><strong>Про себе:</strong></p>
+    <p th:text="${profile.about}">Опис</p>
+
+    <a class="button" href="/home">На головну</a>
+</div>
+
+</body>
+</html>

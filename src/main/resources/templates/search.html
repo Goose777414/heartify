@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Пошук анкет</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+        }
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto 30px;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .search-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .search-container form {
+            display: flex;
+            gap: 10px;
+        }
+        .search-container input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+        .search-container button {
+            padding: 10px 20px;
+            background-color: #6392f1;
+            border: none;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .search-container button:hover {
+            background-color: #5c8ee5;
+        }
+        .profiles {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        .card {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            width: 200px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        .card:hover {
+            transform: scale(1.05);
+        }
+        a.button {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 15px;
+            background-color: #6392f1;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+        }
+        a.button:hover {
+            background-color: #5c8ee5;
+        }
+    </style>
+</head>
+<body>
+
+<div class="search-container">
+    <h2>Пошук за ключовими словами</h2>
+    <form th:action="@{/search}" method="get">
+        <input type="text" name="keyword" placeholder="Введіть ключове слово..." required />
+        <button type="submit">Шукати</button>
+    </form>
+</div>
+
+<div class="profiles">
+    <div class="card" th:each="profile : ${profiles}">
+        <h3 th:text="${profile.name}">Ім'я користувача</h3>
+        <p><strong>Місто:</strong> <span th:text="${profile.city}">Місто</span></p>
+        <p><strong>Вік:</strong> <span th:text="${profile.age}">Вік</span></p>
+        <a class="button" th:href="@{'/profile/view/' + ${profile.id}}">Переглянути</a>
+    </div>
+</div>
+
+</body>
+</html>
