@@ -1,112 +1,116 @@
 package com.example.heartify.controller;
 
-import com.example.heartify.repository.UserProfileRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
 import com.example.heartify.model.User;
 import com.example.heartify.model.UserProfile;
+import com.example.heartify.repository.UserProfileRepository;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
+@RequestMapping("/profile")
 public class ProfileController {
-    @Autowired
-    private UserProfileRepository profileRepository;
 
-    @GetMapping("/profile/edit")
-    public String showEditProfile(HttpSession session, Model model) {
-        // 1) Перевіряємо, чи є в сесії залогінений користувач
+    private final UserProfileRepository profileRepository;
+
+    @Autowired
+    public ProfileController(UserProfileRepository profileRepository) {
+        this.profileRepository = profileRepository;
+    }
+
+    // ==== 1. СВОЯ АНКЕТА: перегляд ====
+    @GetMapping
+    public String viewOwnProfile(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
         if (user == null) {
             return "redirect:/login";
         }
-
-        // 2) Підтягуємо його анкету, або створюємо за замовчуванням
         UserProfile profile = profileRepository.findByUser(user);
         if (profile == null) {
-            profile = new UserProfile();
-            profile.setUser(user);
+            // якщо профілю ще нема — перенаправимо на створення
+            return "redirect:/profile/create";
         }
-
-        // 3) Кладемо в модель, щоб Thymeleaf заповнив форму
         model.addAttribute("profile", profile);
-        return "profile-edit";  // повертаємо profile-edit.html
+        return "profile-view";   // той самий шаблон, що й для чужих анкет
     }
 
-    @PostMapping("/profile/edit")
-    public String saveProfile(
-            @ModelAttribute("profile") UserProfile updatedProfile,
-            HttpSession session,
-            Model model
-    ) {
-        // 1. Перевіряємо сесію
+    // ==== 2. СВОЯ АНКЕТА: створення ====
+    @GetMapping("/create")
+    public String showCreateForm(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
         if (user == null) {
             return "redirect:/login";
         }
-
-        // 2. Підтягуємо існуючий профіль користувача
-        UserProfile existingProfile = profileRepository.findByUser(user);
-
-        if (existingProfile == null) {
-            // Якщо профіль не знайдено — створюємо новий
-            existingProfile = new UserProfile();
-            existingProfile.setUser(user);
-        }
-
-        // 3. Оновлюємо лише потрібні поля
-        existingProfile.setName(updatedProfile.getName());
-        existingProfile.setAge(updatedProfile.getAge());
-        existingProfile.setCity(updatedProfile.getCity());
-        existingProfile.setAbout(updatedProfile.getAbout());
-
-        // 4. Зберігаємо в базу
-        profileRepository.save(existingProfile);
-
-        // 5. Повертаємо на домашню сторінку
-        return "redirect:/home";
-    }
-
-
-    // Показати форму створення анкети
-    @GetMapping("/profile/create")
-    public String showCreateProfile(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            return "redirect:/login";
-        }
-        // кладемо порожній обʼєкт, щоб th:object запрацював
+        // даємо порожній об’єкт у форму
         model.addAttribute("profile", new UserProfile());
-        return "profile-create";   // <— імʼя вашого шаблону profile-create.html
+        return "profile-create";
     }
 
-    // Обробка сабміту форми створення анкети
-    @PostMapping("/profile/create")
-    public String saveNewProfile(@ModelAttribute("profile") UserProfile profile,
-                                 HttpSession session) {
+    @PostMapping("/create")
+    public String processCreate(
+            @ModelAttribute("profile") UserProfile form,
+            HttpSession session
+    ) {
         User user = (User) session.getAttribute("user");
         if (user == null) {
             return "redirect:/login";
         }
-        profile.setUser(user);
-        profileRepository.save(profile);
-        return "redirect:/home";
+        form.setUser(user);
+        UserProfile saved = profileRepository.save(form);
+        return "redirect:/profile";  // після створення — на свій профіль
     }
 
-
-    @GetMapping("/profile/view/{id}")
-    public String viewProfile(@PathVariable("id") Long id, Model model) {
-        UserProfile profile = profileRepository.findById(id).orElse(null);
-
-        if (profile == null) {
-            return "redirect:/home"; // Якщо профілю немає — назад на головну
+    // ==== 3. СВОЯ АНКЕТА: редагування ====
+    @GetMapping("/edit")
+    public String showEditForm(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
         }
-
+        UserProfile profile = profileRepository.findByUser(user);
+        if (profile == null) {
+            // якщо немає — створити
+            return "redirect:/profile/create";
+        }
         model.addAttribute("profile", profile);
-        return "profile-view"; // Це має бути твій новий файл profile-view.html
+        return "profile-edit";
+    }
+
+    @PostMapping("/edit")
+    public String processEdit(
+            @ModelAttribute("profile") UserProfile form,
+            HttpSession session
+    ) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+        UserProfile existing = profileRepository.findByUser(user);
+        if (existing == null) {
+            // на всякий випадок
+            existing = new UserProfile();
+            existing.setUser(user);
+        }
+        // оновлюємо поля
+        existing.setName(form.getName());
+        existing.setAge(form.getAge());
+        existing.setCity(form.getCity());
+        existing.setAbout(form.getAbout());
+        // TODO: якщо у вас є keywords — оновити їх тут
+        profileRepository.save(existing);
+        return "redirect:/profile";
+    }
+
+    // ==== 4. ЧУЖА АНКЕТА: перегляд за ID ====
+    @GetMapping("/view/{id}")
+    public String viewOtherProfile(@PathVariable Long id, Model model) {
+        UserProfile profile = profileRepository.findById(id).orElse(null);
+        if (profile == null) {
+            return "redirect:/home";
+        }
+        model.addAttribute("profile", profile);
+        return "profile-view";
     }
 }
