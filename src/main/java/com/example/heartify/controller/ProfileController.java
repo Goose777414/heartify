@@ -5,6 +5,7 @@ import com.example.heartify.model.UserProfile;
 import com.example.heartify.model.Keyword;
 import com.example.heartify.repository.UserProfileRepository;
 import com.example.heartify.repository.KeywordRepository;
+import com.example.heartify.repository.InvitationRepository;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,18 +17,24 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Controller для роботи з профілями користувачів.
+ */
 @Controller
 @RequestMapping("/profile")
 public class ProfileController {
 
     private final UserProfileRepository profileRepository;
     private final KeywordRepository keywordRepository;
+    private final InvitationRepository invitationRepository;
 
     @Autowired
     public ProfileController(UserProfileRepository profileRepository,
-                             KeywordRepository keywordRepository) {
+                             KeywordRepository keywordRepository,
+                             InvitationRepository invitationRepository) {
         this.profileRepository = profileRepository;
         this.keywordRepository = keywordRepository;
+        this.invitationRepository = invitationRepository;
     }
 
     // ==== 1. СВОЯ АНКЕТА: перегляд ====
@@ -39,11 +46,14 @@ public class ProfileController {
         }
         UserProfile profile = profileRepository.findByUser(user);
         if (profile == null) {
-            // якщо профілю ще нема — перенаправимо на створення
             return "redirect:/profile/create";
         }
         model.addAttribute("profile", profile);
-        return "profile-view";   // той самий шаблон, що й для чужих анкет
+        // Покажемо кнопку редагування приватної інформації власнику
+        model.addAttribute("showEditPrivateLink", true);
+        model.addAttribute("showInviteButton", false);
+        model.addAttribute("showPrivateInfoLink", false);
+        return "profile-view";
     }
 
     // ==== 2. СВОЯ АНКЕТА: створення ====
@@ -53,26 +63,15 @@ public class ProfileController {
         if (user == null) {
             return "redirect:/login";
         }
-        // даємо порожній об’єкт у форму
         model.addAttribute("profile", new UserProfile());
         return "profile-create";
     }
-    @GetMapping("/all")
-    public String listAllProfiles(Model model, HttpSession session) {
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            return "redirect:/login";
-        }
-        Iterable<UserProfile> profiles = profileRepository.findAll();
-        model.addAttribute("profiles", profiles);
-        return "profiles";
-    }
+
     @PostMapping("/create")
     public String processCreate(
             @ModelAttribute("profile") UserProfile form,
             @RequestParam(value = "keywordsStr", required = false) String keywordsStr,
-            HttpSession session
-    ) {
+            HttpSession session) {
         User user = (User) session.getAttribute("user");
         if (user == null) {
             return "redirect:/login";
@@ -80,9 +79,8 @@ public class ProfileController {
         List<Keyword> kws = parseKeywords(keywordsStr);
         form.setUser(user);
         form.setKeywords(kws);
-        UserProfile saved = profileRepository.save(form);
         profileRepository.save(form);
-        return "redirect:/profile";  // після створення — на свій профіль
+        return "redirect:/profile";
     }
 
     // ==== 3. СВОЯ АНКЕТА: редагування ====
@@ -94,16 +92,11 @@ public class ProfileController {
         }
         UserProfile profile = profileRepository.findByUser(user);
         if (profile == null) {
-            // якщо немає — створити
             return "redirect:/profile/create";
         }
-
-        // Вираховуємо з профілю строку ключових слів для поля
         String keywordsStr = profile.getKeywords().stream()
                 .map(Keyword::getKeyword)
                 .collect(Collectors.joining(","));
-
-        // Кладемо в модель і профіль, і готовий рядок
         model.addAttribute("profile", profile);
         model.addAttribute("keywordsStr", keywordsStr);
         return "profile-edit";
@@ -113,58 +106,79 @@ public class ProfileController {
     public String processEdit(
             @ModelAttribute("profile") UserProfile form,
             @RequestParam(value = "keywordsStr", required = false) String keywordsStr,
-            HttpSession session
-    ) {
+            HttpSession session) {
         User user = (User) session.getAttribute("user");
         if (user == null) {
             return "redirect:/login";
         }
         UserProfile existing = profileRepository.findByUser(user);
         if (existing == null) {
-            // на всякий випадок
             existing = new UserProfile();
             existing.setUser(user);
         }
-        // оновлюємо поля
         existing.setName(form.getName());
         existing.setAge(form.getAge());
         existing.setCity(form.getCity());
         existing.setAbout(form.getAbout());
-
         List<Keyword> kws = parseKeywords(keywordsStr);
         existing.setKeywords(kws);
-
         profileRepository.save(existing);
         return "redirect:/profile";
     }
 
-    // ==== 4. ЧУЖА АНКЕТА: перегляд за ID ====
+    // ==== 4. Список усіх анкет ====
+    @GetMapping("/all")
+    public String listAllProfiles(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+        Iterable<UserProfile> profiles = profileRepository.findAll();
+        model.addAttribute("profiles", profiles);
+        return "profiles";
+    }
+
+    // ==== 5. ЧУЖА АНКЕТА: перегляд за ID ====
     @GetMapping("/view/{id}")
-    public String viewOtherProfile(@PathVariable Long id, Model model) {
+    public String viewOtherProfile(@PathVariable Long id,
+                                   HttpSession session,
+                                   Model model) {
+        User current = (User) session.getAttribute("user");
+        if (current == null) {
+            return "redirect:/login";
+        }
         UserProfile profile = profileRepository.findById(id).orElse(null);
         if (profile == null) {
             return "redirect:/home";
         }
         model.addAttribute("profile", profile);
-        model.addAttribute("showInviteButton", true);
+        boolean hasInvitation = invitationRepository
+                .findBySenderAndReceiver(current, profile.getUser())
+                .isPresent();
+        model.addAttribute("showInviteButton", !hasInvitation);
+        boolean accepted = invitationRepository
+                .existsBySenderAndReceiverAndAccepted(current, profile.getUser(), true);
+        model.addAttribute("showPrivateInfoLink", accepted);
+        model.addAttribute("showEditPrivateLink", false);
         return "profile-view";
     }
 
-private List<Keyword> parseKeywords(String keywordsStr) {
-    if (keywordsStr == null || keywordsStr.isBlank()) {
-        return List.of();
+    /**
+     * Допоміжний метод: розбирає рядок ключових слів та повертає List<Keyword>.
+     */
+    private List<Keyword> parseKeywords(String keywordsStr) {
+        if (keywordsStr == null || keywordsStr.isBlank()) {
+            return List.of();
+        }
+        return Arrays.stream(keywordsStr.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .map(s -> keywordRepository.findByKeywordIgnoreCase(s)
+                        .orElseGet(() -> {
+                            Keyword k = new Keyword();
+                            k.setKeyword(s);
+                            return keywordRepository.save(k);
+                        }))
+                .collect(Collectors.toList());
     }
-    return Arrays.stream(keywordsStr.split(","))
-            .map(String::trim)
-            .filter(s -> !s.isEmpty())
-            .map(s -> {
-                Optional<Keyword> existing = keywordRepository.findByKeywordIgnoreCase(s);
-                return existing.orElseGet(() -> {
-                    Keyword k = new Keyword();
-                    k.setKeyword(s);
-                    return keywordRepository.save(k);
-                });
-            })
-            .collect(Collectors.toList());
-}
 }
