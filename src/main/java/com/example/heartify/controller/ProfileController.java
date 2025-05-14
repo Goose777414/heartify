@@ -97,7 +97,15 @@ public class ProfileController {
             // якщо немає — створити
             return "redirect:/profile/create";
         }
+
+        // Вираховуємо з профілю строку ключових слів для поля
+        String keywordsStr = profile.getKeywords().stream()
+                .map(Keyword::getKeyword)
+                .collect(Collectors.joining(","));
+
+        // Кладемо в модель і профіль, і готовий рядок
         model.addAttribute("profile", profile);
+        model.addAttribute("keywordsStr", keywordsStr);
         return "profile-edit";
     }
 

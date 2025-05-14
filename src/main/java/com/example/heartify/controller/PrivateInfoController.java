@@ -67,4 +67,31 @@ public class PrivateInfoController {
         model.addAttribute("info", info);
         return "private-info";
     }
+
+    @GetMapping("/private-info/edit")
+    public String showEditPrivateInfo(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) return "redirect:/login";
+
+        UserProfile profile = profileRepository.findByUser(user);
+        PrivateInfo info = privateInfoRepository
+                .findByProfile(profile)
+                .orElse(new PrivateInfo());
+        model.addAttribute("privateInfo", info);
+        return "private-info-edit";
+    }
+
+    @PostMapping("/private-info/edit")
+    public String processEditPrivateInfo(
+            @ModelAttribute("privateInfo") PrivateInfo form,
+            HttpSession session
+    ) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) return "redirect:/login";
+
+        UserProfile profile = profileRepository.findByUser(user);
+        form.setProfile(profile);
+        privateInfoRepository.save(form);
+        return "redirect:/profile";
+    }
 }

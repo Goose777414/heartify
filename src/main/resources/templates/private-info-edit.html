@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="uk">
 <head>
-    <meta charset="UTF-8">
-    <title>Головна сторінка</title>
+    <meta charset="UTF-8"/>
+    <title>Редагувати приватну інформацію</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -48,32 +48,17 @@
     </style>
 </head>
 <body>
-
-<h1>Привіт, <span th:text="${userName}">твоє ім'я</span>!</h1>
-
-<div class="actions">
-    <div class="card">
-        <h3>Редагувати анкету</h3>
-        <a class="button" href="/profile/edit">Перейти</a>
-    </div>
-    <div class="card">
-        <h3>Шукати друзів</h3>
-        <a class="button" href="/search">Шукати</a>
-    </div>
-    <div class="card">
-        <h3>Мої запрошення</h3>
-        <a class="button" href="/invitations">Переглянути</a>
-    </div>
-</div>
-
-<h2 style="text-align:center;">Нові користувачі</h2>
-
-<div class="profiles">
-    <div class="card" th:each="profile : ${profiles}">
-        <h3 th:text="${profile.name}">Ім'я</h3>
-        <a class="button" th:href="@{'/profile/view/' + ${profile.id}}">Переглянути</a>
-    </div>
-</div>
-
+<h1>Приватна інформація</h1>
+<form th:action="@{/private-info/edit}" th:object="${privateInfo}" method="post">
+    <label>Телефон:</label>
+    <input type="text" th:field="*{phone}" placeholder="+380..." />
+    <br/>
+    <label>Дата народження:</label>
+    <input type="date" th:field="*{birthDate}" />
+    <br/>
+    <!-- Додай інші поля з PrivateInfo -->
+    <button type="submit">Зберегти</button>
+</form>
+<a class="button" th:href="@{/profile}">Назад до профілю</a>
 </body>
 </html>

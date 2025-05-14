@@ -78,7 +78,7 @@
         <input type="text"
                id="keywordsStr"
                name="keywordsStr"
-               th:value="${profile.keywords != null} ? ${#strings.listJoin(profile.keywords, ',')} : ''"
+               th:value="${keywordsStr}"
                placeholder="example: music, sport, art"/>
         <button type="submit">Зберегти</button>
     </form>

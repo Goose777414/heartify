@@ -62,6 +62,13 @@
         Переглянути приватну інформацію
     </a>
 
+    <!-- Покажемо тільки для свого профілю: -->
+    <a th:if="${showEditPrivateLink}"
+       class="button"
+       th:href="@{/private-info/edit}">
+        Редагувати приватну інформацію
+    </a>
+
     <a class="button" th:if="${showInviteButton}"
        th:href="@{/invitations/send/{id}(id=${profile.id})}">
         Відправити запрошення
