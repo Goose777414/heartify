@@ -90,6 +90,14 @@
             <label for="about">Про себе</label>
             <textarea id="about" th:field="*{about}" rows="4" placeholder="Розкажіть про себе"></textarea>
         </div>
+        <label for="keywordsStr">Ключові слова (через кому):</label>
+        <input type="text"
+               id="keywordsStr"
+               name="keywordsStr"
+               th:value="${profile.keywords != null} ? ${#strings.listJoin(profile.keywords, ',')} : ''"
+               placeholder="music, sport, art"/>
+        <button type="submit">Зберегти</button>
+
         <button type="submit">Створити анкету</button>
     </form>
 

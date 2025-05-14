@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="uk">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Усі анкети</title>
+</head>
+<body>
+<h1>Усі анкети користувачів</h1>
+<div class="profiles">
+  <div class="card" th:each="profile : ${profiles}">
+    <h3 th:text="${profile.name}">Ім'я</h3>
+    <a th:href="@{'/profile/view/' + ${profile.id}}">Переглянути</a>
+  </div>
+</div>
+</body>
+</html>

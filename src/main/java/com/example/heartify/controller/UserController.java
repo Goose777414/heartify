@@ -90,8 +90,22 @@ public class UserController {
         if (user == null) {
             return "redirect:/login";
         }
-        model.addAttribute("username", user.getUsername());
-        model.addAttribute("profiles", userRepository.findAll());
+        // 1) Підтягуємо свій профіль із БД
+        UserProfile ownProfile = profileRepository.findByUser(user);
+
+        // 2) Вітання — тепер своє реальне ім'я (як його зберігаєш у UserProfile)
+        model.addAttribute("userName", ownProfile.getName());
+
+        // 3) Список чужих анкет — беремо не User, а UserProfile
+        Iterable<UserProfile> allProfiles = profileRepository.findAll();
+        // якщо хочеш прибрати себе зі списку, можеш відфільтрувати:
+        // List<UserProfile> others = StreamSupport.stream(allProfiles.spliterator(), false)
+        //     .filter(p -> !p.getId().equals(ownProfile.getId()))
+        //     .collect(Collectors.toList());
+        // model.addAttribute("profiles", others);
+        model.addAttribute("profiles", allProfiles);
+
         return "home";
+
     }
 }

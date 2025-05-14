@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="uk">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Приватна інформація</title>
+</head>
+<body>
+<h1>Приватна інформація</h1>
+<p><strong>Телефон:</strong> <span th:text="${info.phone}">+380...</span></p>
+<p><strong>Дата народження:</strong> <span th:text="${info.birthDate}">01.01.2000</span></p>
+<!-- інші поля PrivateInfo -->
+<a th:href="@{/home}">На головну</a>
+</body>
+</html>

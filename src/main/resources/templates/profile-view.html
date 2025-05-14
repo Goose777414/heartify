@@ -47,9 +47,29 @@
     <p><strong>Місто:</strong> <span th:text="${profile.city}">Місто</span></p>
     <p><strong>Про себе:</strong></p>
     <p th:text="${profile.about}">Опис</p>
+    <!-- 1) Список ключових слів -->
+    <p><strong>Ключові слова:</strong>
+        <span th:if="${#lists.isEmpty(profile.keywords)}">немає</span>
+        <span th:each="kw, iterStat : ${profile.keywords}">
+        <span th:text="${kw.keyword}">keyword</span><span th:if="${!iterStat.last}">, </span>
+      </span>
+    </p>
 
-    <a class="button" href="/home">На головну</a>
+    <!-- 2) Посилання на приватну інформацію -->
+    <a class="button"
+       th:if="${showPrivateInfoLink}"
+       th:href="@{/private-info/{id}(id=${profile.id})}">
+        Переглянути приватну інформацію
+    </a>
+
+    <a class="button" th:if="${showInviteButton}"
+       th:href="@{/invitations/send/{id}(id=${profile.id})}">
+        Відправити запрошення
+    </a>
+
+    <a class="button" th:href="@{/home}">На головну</a>
 </div>
+
 
 </body>
 </html>

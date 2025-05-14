@@ -49,7 +49,7 @@
 </head>
 <body>
 
-<h1>Вітаємо, <span th:text="${username}">Ім'я</span>!</h1>
+<h1>Привіт, <span th:text="${userName}">твоє ім'я</span>!</h1>
 
 <div class="actions">
     <div class="card">
@@ -70,8 +70,8 @@
 
 <div class="profiles">
     <div class="card" th:each="profile : ${profiles}">
-        <h3 th:text="${profile.username}">Ім'я користувача</h3>
-        <a class="button" th:href="@{'/profile/view/' + ${profile.id}}">Переглянути</a>
+        <h3 th:text="${profile.name}">Ім'я</h3>
+        <a th:href="@{'/profile/view/' + ${profile.id}}">Переглянути</a>
     </div>
 </div>
 
