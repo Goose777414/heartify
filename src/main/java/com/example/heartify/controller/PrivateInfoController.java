@@ -52,16 +52,26 @@ public class PrivateInfoController {
         if (targetProfile == null) {
             return "redirect:/home";
         }
-        boolean canView = invitationRepository
-                .existsBySenderAndReceiverAndAccepted(user, targetProfile.getUser(), true);
-        if (!canView) {
+
+        // 1) власник?
+        boolean isSelf = targetProfile.getUser().equals(user);
+        // 2) або прийняте запрошення?
+        boolean invited = invitationRepository
+                .existsBySenderAndReceiverAndAccepted(targetProfile.getUser(), user, true);
+        // note: перевірка що targetProfile.getUser() (відправник)
+        if (!isSelf && !invited) {
             return "redirect:/invitations";
         }
-        Optional<PrivateInfo> infoOpt = privateInfoRepository.findByProfile(targetProfile);
+
+        // 3) достаємо PrivateInfo для того профілю
+        UserProfile infoProfile = isSelf ? profileRepository.findByUser(user) : targetProfile;
+        Optional<PrivateInfo> infoOpt = privateInfoRepository.findByProfile(infoProfile);
         if (infoOpt.isEmpty()) {
-            // Якщо приватної інформації немає
-            return "redirect:/profile";
+            return isSelf
+                    ? "redirect:/private-info/create"
+                    : "redirect:/profile/view/" + profileId;
         }
+
         model.addAttribute("info", infoOpt.get());
         return "private-info";
     }
@@ -138,15 +148,25 @@ public class PrivateInfoController {
             HttpSession session
     ) {
         User user = (User) session.getAttribute("user");
-        if (user == null) {
-            return "redirect:/login";
-        }
+        if (user == null) return "redirect:/login";
+
         UserProfile profile = profileRepository.findByUser(user);
-        if (profile == null) {
-            return "redirect:/profile/create";
-        }
-        form.setProfile(profile);
-        privateInfoRepository.save(form);
+        if (profile == null) return "redirect:/profile/create";
+
+        // 1) дістаємо наявний PrivateInfo
+        PrivateInfo existing = privateInfoRepository
+                .findByProfile(profile)
+                .orElseThrow(() -> new IllegalStateException("No private info to update"));
+
+        // 2) оновлюємо тільки поля
+        existing.setPhone(form.getPhone());
+        existing.setEmail(form.getEmail());
+        existing.setAddress(form.getAddress());
+        existing.setBirthDate(form.getBirthDate());
+
+        // 3) зберігаємо — Hibernate зробить UPDATE
+        privateInfoRepository.save(existing);
+
         return "redirect:/private-info/" + profile.getId();
     }
 }

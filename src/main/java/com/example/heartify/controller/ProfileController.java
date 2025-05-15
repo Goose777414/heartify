@@ -1,12 +1,12 @@
 package com.example.heartify.controller;
 
+import com.example.heartify.model.Keyword;
 import com.example.heartify.model.User;
 import com.example.heartify.model.UserProfile;
-import com.example.heartify.model.Keyword;
-import com.example.heartify.repository.UserProfileRepository;
-import com.example.heartify.repository.KeywordRepository;
 import com.example.heartify.repository.InvitationRepository;
+import com.example.heartify.repository.KeywordRepository;
 import com.example.heartify.repository.PrivateInfoRepository;
+import com.example.heartify.repository.UserProfileRepository;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -53,12 +53,14 @@ public class ProfileController {
             return "redirect:/profile/create";
         }
         model.addAttribute("profile", profile);
-        // Покажемо кнопку редагування приватної інформації власнику
+        // Показати кнопку редагування приватної інформації власнику
         model.addAttribute("showEditPrivateLink", true);
         model.addAttribute("showInviteButton", false);
         // Перевірка наявності приватної інформації для показу
         boolean hasPrivateInfo = privateInfoRepository.findByProfile(profile).isPresent();
         model.addAttribute("showPrivateInfoLink", hasPrivateInfo);
+        // Заголовок для власного профілю
+        model.addAttribute("pageTitle", "Мій профіль");
         return "profile-view";
     }
 
@@ -134,7 +136,7 @@ public class ProfileController {
 
     // ==== 4. Список усіх анкет ====
     @GetMapping("/all")
-    public String listAllProfiles(Model model, HttpSession session) {
+    public String listAllProfiles(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
         if (user == null) {
             return "redirect:/login";
@@ -157,15 +159,24 @@ public class ProfileController {
         if (profile == null) {
             return "redirect:/home";
         }
+
         model.addAttribute("profile", profile);
-        boolean hasInvitation = invitationRepository
+
+        // Чи є запрошення від current до цього конкретного користувача?
+        boolean alreadySent = invitationRepository
                 .findBySenderAndReceiver(current, profile.getUser())
                 .isPresent();
-        model.addAttribute("showInviteButton", !hasInvitation);
-        boolean accepted = invitationRepository
-                .existsBySenderAndReceiverAndAccepted(current, profile.getUser(), true);
-        model.addAttribute("showPrivateInfoLink", accepted);
+
+        model.addAttribute("showInviteButton", !alreadySent);
         model.addAttribute("showEditPrivateLink", false);
+
+        // чи показувати кнопку перегляду приватної інфи?
+        boolean accepted = invitationRepository
+                .existsBySenderAndReceiverAndAccepted(profile.getUser(), current, true);
+        model.addAttribute("showPrivateInfoLink", accepted);
+
+        // Заголовок сторінки
+        model.addAttribute("pageTitle", "Профіль " + profile.getName() + " користувача");
         return "profile-view";
     }
 

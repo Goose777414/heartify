@@ -19,6 +19,10 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             text-align: center;
         }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
         h2 {
             margin-bottom: 20px;
         }
@@ -40,7 +44,7 @@
     </style>
 </head>
 <body>
-<h1>Мій профіль</h1>
+<h1 th:text="${pageTitle}">Заголовок</h1>
 
 <div class="profile-card">
     <h2 th:text="${profile.name}">Ім'я</h2>
