@@ -40,9 +40,7 @@
     </style>
 </head>
 <body>
-
 <h1>Мої запрошення</h1>
-
 <table>
     <thead>
     <tr>
@@ -54,7 +52,7 @@
     <tbody>
     <tr th:each="inv : ${invitations}">
         <td th:text="${inv.sender.username}">sender</td>
-        <td th:text="${inv.accepted} ? 'Прийнято' : 'Очікується'">status</td>
+        <td th:text="${inv.accepted ? 'Прийнято' : 'Очікується'}">status</td>
         <td>
             <a th:if="${!inv.accepted}"
                th:href="@{/invitations/{id}/accept(id=${inv.id})}"
@@ -66,8 +64,6 @@
     </tr>
     </tbody>
 </table>
-
 <a th:href="@{/home}" class="button">На головну</a>
-
 </body>
 </html>

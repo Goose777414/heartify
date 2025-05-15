@@ -52,15 +52,16 @@ public class ProfileController {
         if (profile == null) {
             return "redirect:/profile/create";
         }
+
         model.addAttribute("profile", profile);
+        model.addAttribute("pageTitle", "Мій профіль");
         // Показати кнопку редагування приватної інформації власнику
         model.addAttribute("showEditPrivateLink", true);
         model.addAttribute("showInviteButton", false);
         // Перевірка наявності приватної інформації для показу
-        boolean hasPrivateInfo = privateInfoRepository.findByProfile(profile).isPresent();
-        model.addAttribute("showPrivateInfoLink", hasPrivateInfo);
-        // Заголовок для власного профілю
-        model.addAttribute("pageTitle", "Мій профіль");
+        boolean hasInfo = privateInfoRepository.findByProfile(profile).isPresent();
+        model.addAttribute("showPrivateInfoLink", hasInfo);
+
         return "profile-view";
     }
 
@@ -161,22 +162,19 @@ public class ProfileController {
         }
 
         model.addAttribute("profile", profile);
-
-        // Чи є запрошення від current до цього конкретного користувача?
-        boolean alreadySent = invitationRepository
+        model.addAttribute("pageTitle", "Профіль " + profile.getName() + " користувача");
+        model.addAttribute("showEditPrivateLink", false);
+        // перевірка: чи ви вже надсилали запрошення цьому користувачеві?
+        boolean sent = invitationRepository
                 .findBySenderAndReceiver(current, profile.getUser())
                 .isPresent();
+        model.addAttribute("showInviteButton", !sent);
 
-        model.addAttribute("showInviteButton", !alreadySent);
-        model.addAttribute("showEditPrivateLink", false);
-
-        // чи показувати кнопку перегляду приватної інфи?
+        // якщо запрошення було надіслане та прийняте, показати «Переглянути приватну інформацію»
         boolean accepted = invitationRepository
-                .existsBySenderAndReceiverAndAccepted(profile.getUser(), current, true);
+                .existsBySenderAndReceiverAndAccepted(current, profile.getUser(), true);
         model.addAttribute("showPrivateInfoLink", accepted);
 
-        // Заголовок сторінки
-        model.addAttribute("pageTitle", "Профіль " + profile.getName() + " користувача");
         return "profile-view";
     }
 

@@ -82,18 +82,18 @@ public class InvitationController {
         if (current == null) {
             return "redirect:/login";
         }
-        Optional<Invitation> invOpt = invitationRepository.findById(id);
-        if (invOpt.isPresent()) {
-            Invitation inv = invOpt.get();
-            if (inv.getReceiver().equals(current) && !inv.isAccepted()) {
-                inv.setAccepted(true);
-                invitationRepository.save(inv);
-                // Переходимо на перегляд приватної інформації відправника
-                User sender = inv.getSender();
-                UserProfile senderProfile = profileRepository.findByUser(sender);
-                return "redirect:/private-info/" + senderProfile.getId();
-            }
+
+        Invitation inv = invitationRepository.findById(id).orElse(null);
+        if (inv != null && inv.getReceiver().equals(current) && !inv.isAccepted()) {
+            inv.setAccepted(true);
+            invitationRepository.save(inv);
+
+            // після прийняття – відкриваємо профіль того, хто надіслав
+            User sender = inv.getSender();
+            UserProfile senderProfile = profileRepository.findByUser(sender);
+            return "redirect:/profile/view/" + senderProfile.getId();
         }
+
         return "redirect:/invitations";
     }
 
@@ -106,12 +106,10 @@ public class InvitationController {
         if (current == null) {
             return "redirect:/login";
         }
-        Optional<Invitation> invOpt = invitationRepository.findById(id);
-        if (invOpt.isPresent()) {
-            Invitation inv = invOpt.get();
-            if (inv.getReceiver().equals(current) && !inv.isAccepted()) {
-                invitationRepository.delete(inv);
-            }
+
+        Invitation inv = invitationRepository.findById(id).orElse(null);
+        if (inv != null && inv.getReceiver().equals(current) && !inv.isAccepted()) {
+            invitationRepository.delete(inv);
         }
         return "redirect:/invitations";
     }
