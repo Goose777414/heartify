@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="uk">
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
     <title>Приватна інформація</title>
@@ -24,6 +24,11 @@
         }
         p {
             margin: 10px 0;
+            text-align: left;
+        }
+        span {
+            display: inline-block;
+            margin-left: 5px;
         }
         a.button {
             display: inline-block;
@@ -40,10 +45,18 @@
     </style>
 </head>
 <body>
-<h1>Приватна інформація</h1>
-<p><strong>Телефон:</strong> <span th:text="${info.phone}">+380...</span></p>
-<p><strong>Дата народження:</strong> <span th:text="${info.birthDate}">01.01.2000</span></p>
-<!-- інші поля PrivateInfo -->
-<a th:href="@{/home}">На головну</a>
+
+<div class="profile-card">
+    <h2>Приватна інформація</h2>
+    <p><strong>Телефон:</strong><span th:text="${info.phone}">+380...</span></p>
+    <p><strong>Email:</strong><span th:text="${info.email}">example@mail.com</span></p>
+    <p><strong>Адреса:</strong><span th:text="${info.address}">Ваша адреса</span></p>
+    <p><strong>Дата народження:</strong>
+        <span th:text="${#dates.format(info.birthDate, 'dd.MM.yyyy')}">01.01.2000</span>
+    </p>
+
+    <a th:href="@{/profile}" class="button">Назад до профілю</a>
+</div>
+
 </body>
 </html>

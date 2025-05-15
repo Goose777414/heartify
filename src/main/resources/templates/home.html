@@ -48,32 +48,33 @@
     </style>
 </head>
 <body>
-
 <h1>Привіт, <span th:text="${userName}">твоє ім'я</span>!</h1>
 
 <div class="actions">
     <div class="card">
         <h3>Редагувати анкету</h3>
-        <a class="button" href="/profile/edit">Перейти</a>
+        <a class="button" th:href="@{/profile/edit}">Перейти</a>
     </div>
     <div class="card">
         <h3>Шукати друзів</h3>
-        <a class="button" href="/search">Шукати</a>
+        <a class="button" th:href="@{/search}">Шукати</a>
+    </div>
+    <div class="card">
+        <h3>Мій профіль</h3>
+        <a class="button" th:href="@{/profile}">Переглянути</a>
     </div>
     <div class="card">
         <h3>Мої запрошення</h3>
-        <a class="button" href="/invitations">Переглянути</a>
+        <a class="button" th:href="@{/invitations}">Переглянути</a>
     </div>
 </div>
 
-<h2 style="text-align:center;">Нові користувачі</h2>
-
+<h2 style="text-align:center; margin-top:40px;">Нові користувачі</h2>
 <div class="profiles">
     <div class="card" th:each="profile : ${profiles}">
         <h3 th:text="${profile.name}">Ім'я</h3>
         <a class="button" th:href="@{'/profile/view/' + ${profile.id}}">Переглянути</a>
     </div>
 </div>
-
 </body>
 </html>

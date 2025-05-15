@@ -6,6 +6,7 @@ import com.example.heartify.model.Keyword;
 import com.example.heartify.repository.UserProfileRepository;
 import com.example.heartify.repository.KeywordRepository;
 import com.example.heartify.repository.InvitationRepository;
+import com.example.heartify.repository.PrivateInfoRepository;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -27,14 +28,17 @@ public class ProfileController {
     private final UserProfileRepository profileRepository;
     private final KeywordRepository keywordRepository;
     private final InvitationRepository invitationRepository;
+    private final PrivateInfoRepository privateInfoRepository;
 
     @Autowired
     public ProfileController(UserProfileRepository profileRepository,
                              KeywordRepository keywordRepository,
-                             InvitationRepository invitationRepository) {
+                             InvitationRepository invitationRepository,
+                             PrivateInfoRepository privateInfoRepository) {
         this.profileRepository = profileRepository;
         this.keywordRepository = keywordRepository;
         this.invitationRepository = invitationRepository;
+        this.privateInfoRepository = privateInfoRepository;
     }
 
     // ==== 1. СВОЯ АНКЕТА: перегляд ====
@@ -52,7 +56,9 @@ public class ProfileController {
         // Покажемо кнопку редагування приватної інформації власнику
         model.addAttribute("showEditPrivateLink", true);
         model.addAttribute("showInviteButton", false);
-        model.addAttribute("showPrivateInfoLink", false);
+        // Перевірка наявності приватної інформації для показу
+        boolean hasPrivateInfo = privateInfoRepository.findByProfile(profile).isPresent();
+        model.addAttribute("showPrivateInfoLink", hasPrivateInfo);
         return "profile-view";
     }
 
