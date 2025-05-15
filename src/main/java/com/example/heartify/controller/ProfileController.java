@@ -44,22 +44,18 @@ public class ProfileController {
     // ==== 1. СВОЯ АНКЕТА: перегляд ====
     @GetMapping
     public String viewOwnProfile(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            return "redirect:/login";
-        }
-        UserProfile profile = profileRepository.findByUser(user);
-        if (profile == null) {
-            return "redirect:/profile/create";
-        }
+        User me = (User) session.getAttribute("user");
+        if (me == null) return "redirect:/login";
 
-        model.addAttribute("profile", profile);
+        UserProfile myProfile = profileRepository.findByUser(me);
+        if (myProfile == null) return "redirect:/profile/create";
+
+        model.addAttribute("profile", myProfile);
         model.addAttribute("pageTitle", "Мій профіль");
-        // Показати кнопку редагування приватної інформації власнику
-        model.addAttribute("showEditPrivateLink", true);
         model.addAttribute("showInviteButton", false);
-        // Перевірка наявності приватної інформації для показу
-        boolean hasInfo = privateInfoRepository.findByProfile(profile).isPresent();
+        model.addAttribute("showEditPrivateLink", true);
+        // якщо приватна інформація вже є
+        boolean hasInfo = privateInfoRepository.findByProfile(myProfile).isPresent();
         model.addAttribute("showPrivateInfoLink", hasInfo);
 
         return "profile-view";
@@ -152,27 +148,25 @@ public class ProfileController {
     public String viewOtherProfile(@PathVariable Long id,
                                    HttpSession session,
                                    Model model) {
-        User current = (User) session.getAttribute("user");
-        if (current == null) {
-            return "redirect:/login";
-        }
-        UserProfile profile = profileRepository.findById(id).orElse(null);
-        if (profile == null) {
-            return "redirect:/home";
-        }
+        User me = (User) session.getAttribute("user");
+        if (me == null) return "redirect:/login";
 
-        model.addAttribute("profile", profile);
-        model.addAttribute("pageTitle", "Профіль " + profile.getName() + " користувача");
+        UserProfile other = profileRepository.findById(id).orElse(null);
+        if (other == null) return "redirect:/home";
+
+        model.addAttribute("profile", other);
+        model.addAttribute("pageTitle", "Профіль " + other.getName() + " користувача");
         model.addAttribute("showEditPrivateLink", false);
-        // перевірка: чи ви вже надсилали запрошення цьому користувачеві?
-        boolean sent = invitationRepository
-                .findBySenderAndReceiver(current, profile.getUser())
-                .isPresent();
-        model.addAttribute("showInviteButton", !sent);
 
-        // якщо запрошення було надіслане та прийняте, показати «Переглянути приватну інформацію»
+        // чи вже надсилали запрошення саме цьому користувачу?
+        boolean alreadySent = invitationRepository
+                .findBySenderAndReceiver(me, other.getUser())
+                .isPresent();
+        model.addAttribute("showInviteButton", !alreadySent);
+
+        // якщо ви надіслали й це запрошення прийняли
         boolean accepted = invitationRepository
-                .existsBySenderAndReceiverAndAccepted(current, profile.getUser(), true);
+                .existsBySenderAndReceiverAndAccepted(me, other.getUser(), true);
         model.addAttribute("showPrivateInfoLink", accepted);
 
         return "profile-view";

@@ -73,42 +73,38 @@ public class InvitationController {
         return "redirect:/profile/view/" + profileId;
     }
 
-    /**
-     * Прийняти запрошення — відправляє на приватну інформацію відправника.
-     */
+    // Прийняти запрошення: тільки одержувач може, потім на перегляд профілю відправника
     @GetMapping("/invitations/{id}/accept")
     public String acceptInvitation(@PathVariable Long id, HttpSession session) {
         User current = (User) session.getAttribute("user");
-        if (current == null) {
-            return "redirect:/login";
-        }
+        if (current == null) return "redirect:/login";
 
         Invitation inv = invitationRepository.findById(id).orElse(null);
-        if (inv != null && inv.getReceiver().equals(current) && !inv.isAccepted()) {
+        if (inv != null
+                && inv.getReceiver().equals(current)
+                && !inv.isAccepted()
+        ) {
             inv.setAccepted(true);
             invitationRepository.save(inv);
-
-            // після прийняття – відкриваємо профіль того, хто надіслав
+            // перейдемо на профіль того, хто запросив
             User sender = inv.getSender();
-            UserProfile senderProfile = profileRepository.findByUser(sender);
-            return "redirect:/profile/view/" + senderProfile.getId();
+            UserProfile sp = profileRepository.findByUser(sender);
+            return "redirect:/profile/view/" + sp.getId();
         }
-
         return "redirect:/invitations";
     }
 
-    /**
-     * Відхилити (видалити) запрошення
-     */
+    // Відхилити запрошення: тільки одержувач може
     @GetMapping("/invitations/{id}/reject")
     public String rejectInvitation(@PathVariable Long id, HttpSession session) {
         User current = (User) session.getAttribute("user");
-        if (current == null) {
-            return "redirect:/login";
-        }
+        if (current == null) return "redirect:/login";
 
         Invitation inv = invitationRepository.findById(id).orElse(null);
-        if (inv != null && inv.getReceiver().equals(current) && !inv.isAccepted()) {
+        if (inv != null
+                && inv.getReceiver().equals(current)
+                && !inv.isAccepted()
+        ) {
             invitationRepository.delete(inv);
         }
         return "redirect:/invitations";

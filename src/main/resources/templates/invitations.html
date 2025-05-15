@@ -4,39 +4,13 @@
     <meta charset="UTF-8"/>
     <title>Мої запрошення</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f0f2f5;
-            margin: 0;
-            padding: 20px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-            background: white;
-        }
-        th, td {
-            padding: 12px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-        th {
-            background: #6392f1;
-            color: white;
-        }
-        a.button {
-            display: inline-block;
-            padding: 8px 12px;
-            margin-right: 8px;
-            background-color: #6392f1;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-        }
-        a.button:hover {
-            background-color: #5c8ee5;
-        }
+        body { font-family: Arial, sans-serif; background: #f0f2f5; margin: 0; padding: 20px; }
+        h1 { text-align: center; margin-bottom: 30px; }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
+        th { background: #6392f1; color: white; }
+        a.button { display: inline-block; padding: 8px 12px; margin: 4px; background: #6392f1; color: #fff; text-decoration: none; border-radius: 5px; }
+        a.button:hover { background: #5c8ee5; }
     </style>
 </head>
 <body>
@@ -52,18 +26,24 @@
     <tbody>
     <tr th:each="inv : ${invitations}">
         <td th:text="${inv.sender.username}">sender</td>
-        <td th:text="${inv.accepted ? 'Прийнято' : 'Очікується'}">status</td>
+        <td th:text="${inv.accepted} ? 'Прийнято' : 'Очікується'">status</td>
         <td>
             <a th:if="${!inv.accepted}"
-               th:href="@{/invitations/{id}/accept(id=${inv.id})}"
-               class="button">Прийняти</a>
+               class="button"
+               th:href="@{/invitations/{id}/accept(id=${inv.id})}">
+                Прийняти
+            </a>
             <a th:if="${!inv.accepted}"
-               th:href="@{/invitations/{id}/reject(id=${inv.id})}"
-               class="button">Відхилити</a>
+               class="button"
+               th:href="@{/invitations/{id}/reject(id=${inv.id})}">
+                Відхилити
+            </a>
         </td>
     </tr>
     </tbody>
 </table>
-<a th:href="@{/home}" class="button">На головну</a>
+<div style="text-align:center; margin-top:20px;">
+    <a th:href="@{/home}" class="button">На головну</a>
+</div>
 </body>
 </html>
