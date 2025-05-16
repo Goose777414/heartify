@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="uk" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8"/>
     <title>Головна сторінка</title>
     <style>
         body {
@@ -11,6 +11,10 @@
             padding: 20px;
         }
         h1 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .logout-container {
             text-align: center;
             margin-bottom: 30px;
         }
@@ -49,6 +53,10 @@
 </head>
 <body>
 <h1>Привіт, <span th:text="${userName}">твоє ім'я</span>!</h1>
+<!-- Кнопка виходу із профілю -->
+<div class="logout-container">
+    <a class="button" th:href="@{/logout}">Вийти</a>
+</div>
 
 <div class="actions">
     <div class="card">
