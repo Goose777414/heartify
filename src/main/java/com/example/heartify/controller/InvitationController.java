@@ -73,36 +73,44 @@ public class InvitationController {
         return "redirect:/profile/view/" + profileId;
     }
 
-    // Прийняти запрошення: тільки одержувач може, потім на перегляд профілю відправника
+    /** Прийняти запрошення й перейти на профіль відправника */
     @GetMapping("/invitations/{id}/accept")
     public String acceptInvitation(@PathVariable Long id, HttpSession session) {
         User current = (User) session.getAttribute("user");
-        if (current == null) return "redirect:/login";
+        if (current == null) {
+            return "redirect:/login";
+        }
 
         Invitation inv = invitationRepository.findById(id).orElse(null);
         if (inv != null
-                && inv.getReceiver().equals(current)
+                && inv.getReceiver() != null
+                && inv.getReceiver().getId().equals(current.getId())  // порівняння за id
                 && !inv.isAccepted()
         ) {
             inv.setAccepted(true);
             invitationRepository.save(inv);
-            // перейдемо на профіль того, хто запросив
+
+            // переходимо на профіль того, хто запросив
             User sender = inv.getSender();
             UserProfile sp = profileRepository.findByUser(sender);
             return "redirect:/profile/view/" + sp.getId();
         }
+
         return "redirect:/invitations";
     }
 
-    // Відхилити запрошення: тільки одержувач може
+    /** Відхилити (видалити) запрошення */
     @GetMapping("/invitations/{id}/reject")
     public String rejectInvitation(@PathVariable Long id, HttpSession session) {
         User current = (User) session.getAttribute("user");
-        if (current == null) return "redirect:/login";
+        if (current == null) {
+            return "redirect:/login";
+        }
 
         Invitation inv = invitationRepository.findById(id).orElse(null);
         if (inv != null
-                && inv.getReceiver().equals(current)
+                && inv.getReceiver() != null
+                && inv.getReceiver().getId().equals(current.getId())  // порівняння за id
                 && !inv.isAccepted()
         ) {
             invitationRepository.delete(inv);
