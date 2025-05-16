@@ -52,7 +52,9 @@
     <p><strong>Email:</strong><span th:text="${info.email}">example@mail.com</span></p>
     <p><strong>Адреса:</strong><span th:text="${info.address}">Ваша адреса</span></p>
     <p><strong>Дата народження:</strong>
-        <span th:text="${#dates.format(info.birthDate, 'dd.MM.yyyy')}">01.01.2000</span>
+        <span th:if="${info.birthDate != null}" class="value"
+              th:text="${#temporals.format(info.birthDate, 'dd.MM.yyyy')}">01.01.2000</span>
+        <span th:if="${info.birthDate == null}" class="value">не вказано</span>
     </p>
 
     <a th:href="@{/profile}" class="button">Назад до профілю</a>

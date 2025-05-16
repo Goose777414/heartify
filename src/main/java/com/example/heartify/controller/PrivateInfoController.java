@@ -44,32 +44,45 @@ public class PrivateInfoController {
     public String viewPrivateInfo(@PathVariable Long profileId,
                                   HttpSession session,
                                   Model model) {
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
+        User current = (User) session.getAttribute("user");
+        if (current == null) {
             return "redirect:/login";
         }
+
         UserProfile targetProfile = profileRepository.findById(profileId).orElse(null);
         if (targetProfile == null) {
             return "redirect:/home";
         }
 
-        // 1) власник?
-        boolean isSelf = targetProfile.getUser().equals(user);
-        // 2) або прийняте запрошення?
-        boolean invited = invitationRepository
-                .existsBySenderAndReceiverAndAccepted(targetProfile.getUser(), user, true);
-        // note: перевірка що targetProfile.getUser() (відправник)
-        if (!isSelf && !invited) {
-            return "redirect:/invitations";
+        // 1) Визначаємо, чи це власний профіль
+        boolean isSelf = targetProfile.getUser().getId().equals(current.getId());
+
+        // 2) Якщо не свій — перевіряємо, що саме цей користувач тебе запросив і ти прийняв
+        if (!isSelf) {
+            boolean accepted = invitationRepository
+                    .existsBySenderAndReceiverAndAccepted(
+                            targetProfile.getUser(),
+                            current,
+                            true
+                    );
+            if (!accepted) {
+                return "redirect:/invitations";
+            }
         }
 
-        // 3) достаємо PrivateInfo для того профілю
-        UserProfile infoProfile = isSelf ? profileRepository.findByUser(user) : targetProfile;
+        // 3) Достаємо PrivateInfo для цільового профілю (свій або чужий)
+        UserProfile infoProfile = isSelf
+                ? profileRepository.findByUser(current)
+                : targetProfile;
+
         Optional<PrivateInfo> infoOpt = privateInfoRepository.findByProfile(infoProfile);
         if (infoOpt.isEmpty()) {
-            return isSelf
-                    ? "redirect:/private-info/create"
-                    : "redirect:/profile/view/" + profileId;
+            // якщо ти переглядаєш свій профіль і ще не створив інфо — на створення
+            if (isSelf) {
+                return "redirect:/private-info/create";
+            }
+            // якщо чужий і немає інфи — назад на перегляд профілю
+            return "redirect:/profile/view/" + profileId;
         }
 
         model.addAttribute("info", infoOpt.get());
