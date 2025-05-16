@@ -164,9 +164,13 @@ public class ProfileController {
                 .isPresent();
         model.addAttribute("showInviteButton", !alreadySent);
 
-        // якщо ви надіслали й це запрошення прийняли
+        // якщо власник анкети прийняв ваше запрошення
         boolean accepted = invitationRepository
-                .existsBySenderAndReceiverAndAccepted(me, other.getUser(), true);
+                .existsBySenderAndReceiverAndAccepted(
+                        other.getUser(),  // тепер відправник — власник анкети
+                        me,                // одержувач — поточний користувач
+                        true
+                );
         model.addAttribute("showPrivateInfoLink", accepted);
 
         return "profile-view";
