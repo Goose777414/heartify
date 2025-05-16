@@ -104,12 +104,8 @@ public class UserController {
 
         // 3) Список чужих анкет — беремо не User, а UserProfile
         Iterable<UserProfile> allProfiles = profileRepository.findAll();
-        // якщо хочеш прибрати себе зі списку, можеш відфільтрувати:
-        // List<UserProfile> others = StreamSupport.stream(allProfiles.spliterator(), false)
-        //     .filter(p -> !p.getId().equals(ownProfile.getId()))
-        //     .collect(Collectors.toList());
-        // model.addAttribute("profiles", others);
-        model.addAttribute("profiles", allProfiles);
+        model.addAttribute("profiles",
+                profileRepository.findByUser_IdNot(user.getId()));
 
         return "home";
 
