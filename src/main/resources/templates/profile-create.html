@@ -4,73 +4,21 @@
     <meta charset="UTF-8">
     <title>Створити анкету</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f0f2f5;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        .container {
-            background: #ffffff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            width: 400px;
-        }
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        form > div {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        input, textarea {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        input[type="number"] {
-            -moz-appearance: textfield;
-        }
-        button {
-            width: 100%;
-            padding: 10px;
-            background: #6392f1;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        button:hover {
-            background: #5c8ee5;
-        }
-        .toggle-link {
-            text-align: center;
-            margin-top: 10px;
-        }
-        .toggle-link a {
-            color: #6392f1;
-            text-decoration: none;
-        }
-        .toggle-link a:hover {
-            text-decoration: underline;
-        }
+        body{font:16px/1.5 Arial,sans-serif;background:#2b2a33;color:#fff;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;padding:20px}
+        .container{background:#4a4857;padding:30px;border-radius:12px;box-shadow:0 0 15px rgba(0,0,0,0.1);width:400px}
+        h2{margin:0 0 20px;color:#fff;text-align:center}
+        form>div{margin-bottom:15px}
+        label{display:block;margin-bottom:5px;color:#fff;font-weight:700}
+        input,textarea{width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;box-sizing:border-box}
+        input[type=number]{-moz-appearance:textfield}
+        button{width:100%;padding:10px;background:#6392f1;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:16px}
+        button:hover{background:#5c8ee5}
+        button + button {margin-top:20px;}
+        .toggle-link a{color:#6392f1;text-decoration:none}
+        .toggle-link a:hover{text-decoration:underline}
     </style>
 </head>
 <body>
-
 <div class="container">
     <h2>Створити анкету</h2>
     <form th:action="@{/profile/create}" th:object="${profile}" method="post">
@@ -90,21 +38,13 @@
             <label for="about">Про себе</label>
             <textarea id="about" th:field="*{about}" rows="4" placeholder="Розкажіть про себе"></textarea>
         </div>
-        <label for="keywordsStr">Ключові слова (через кому):</label>
-        <input type="text"
-               id="keywordsStr"
-               name="keywordsStr"
-               th:value="${profile.keywords != null} ? ${#strings.listJoin(profile.keywords, ',')} : ''"
-               placeholder="music, sport, art"/>
+        <div>
+            <label for="keywordsStr">Ключові слова (через кому):</label>
+            <input type="text" id="keywordsStr" name="keywordsStr" th:value="${profile.keywords != null} ? ${#strings.listJoin(profile.keywords, ',')} : ''" placeholder="music, sport, art"/>
+        </div>
         <button type="submit">Зберегти</button>
-
         <button type="submit">Створити анкету</button>
     </form>
-
-    <div class="toggle-link">
-        <a th:href="@{/home}">Повернутися на головну</a>
-    </div>
 </div>
-
 </body>
 </html>
