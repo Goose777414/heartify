@@ -3,7 +3,17 @@
 <head>
     <meta charset="UTF-8"/>
     <title>Пошук анкет</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f0f2f5; margin: 0; padding: 20px; }
+        h1 { text-align: center; margin-bottom: 20px; }
+        .search-form { text-align: center; margin-bottom: 30px; }
+        input[type="text"] { width: 300px; padding: 8px; }
+        button, a.button { display: inline-block; margin-left: 10px; padding: 8px 12px; background: #6392f1; color: white; text-decoration: none; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover, a.button:hover { background: #5c8ee5; }
+        .profiles { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
+        .card { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); width: 200px; text-align: center; transition: transform 0.3s; }
+        .card:hover { transform: scale(1.05); }
+    </style>
 </head>
 <body>
 <h1>Пошук анкет</h1>
