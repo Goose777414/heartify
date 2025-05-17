@@ -2,6 +2,12 @@ package com.example.heartify.model;
 
 import jakarta.persistence.*;
 import java.util.List;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.FetchType;
+import java.util.ArrayList;
 
 @Entity
 @Table(name = "profiles")
@@ -20,8 +26,13 @@ public class UserProfile {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
-    private List<Keyword> keywords;
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "profile_keyword",
+            joinColumns = @JoinColumn(name = "profile_id"),
+            inverseJoinColumns = @JoinColumn(name = "keyword_id")
+    )
+    private List<Keyword> keywords = new ArrayList<>();
 
     @OneToOne(mappedBy = "profile", cascade = CascadeType.ALL)
     private PrivateInfo privateInfo;

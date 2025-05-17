@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Редагувати приватну інформацію</title>
+    <style>
+        body {font: 16px/1.5 Arial, sans-serif;background: #2b2a33;color: #fff;display: flex;justify-content: center;align-items: center;min-height: 100vh;margin: 0;padding: 20px;}
+        .profile-card {max-width: 400px;background: #4a4857;padding: 30px;border-radius: 12px;box-shadow: 0 0 15px rgba(0,0,0,0.1);text-align: center;width: 100%;}
+        h2 {margin-bottom: 20px;color: #fff;}
+        label {display: block;margin: 10px 0 5px;text-align: left;color: #fff;}
+        input {width: 100%;padding: 10px;margin-bottom: 15px;border: 1px solid #ccc;border-radius: 6px;box-sizing: border-box;font-size: 16px;}
+        button {display: inline-block;margin-top: 10px;padding: 10px 15px;background: #6392f1;color: #fff;border: none;border-radius: 6px;cursor: pointer;font-size: 16px;}
+        button:hover {background: #5c8ee5;}
+        a.back-link {display: inline-block;margin-top: 15px;color: #6392f1;text-decoration: none;font-size: 14px;}
+        a.back-link:hover {text-decoration: underline;}
+    </style>
+</head>
+<body>
+
+<div class="profile-card">
+    <h2>Редагувати приватну інформацію</h2>
+    <form th:action="@{/private-info/edit}" th:object="${privateInfo}" method="post">
+        <label for="phone">Телефон:</label>
+        <input type="text" id="phone" th:field="*{phone}" placeholder="+380..." />
+
+        <label for="email">Email:</label>
+        <input type="text" id="email" th:field="*{email}" placeholder="example@mail.com" />
+
+        <label for="address">Адреса:</label>
+        <input type="text" id="address" th:field="*{address}" placeholder="Ваша адреса" />
+
+        <label for="birthDate">Дата народження:</label>
+        <input type="date" id="birthDate" th:field="*{birthDate}" />
+
+        <button type="submit">Зберегти</button>
+    </form>
+
+    <a th:href="@{/profile}" class="back-link">Назад до профілю</a>
+</div>
+
+</body>
+</html>

@@ -1,6 +1,7 @@
 package com.example.heartify.model;
 
 import jakarta.persistence.*;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "private_infos")
@@ -13,6 +14,9 @@ public class PrivateInfo {
     private String phone;
     private String email;
     private String address;
+
+    // Додане поле для дати народження
+    private LocalDate birthDate;
 
     @OneToOne
     @JoinColumn(name = "profile_id")
@@ -48,6 +52,14 @@ public class PrivateInfo {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public LocalDate getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
     }
 
     public UserProfile getProfile() {

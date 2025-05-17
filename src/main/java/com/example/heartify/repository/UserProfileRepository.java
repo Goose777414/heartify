@@ -9,4 +9,7 @@ import java.util.List;
 public interface UserProfileRepository extends CrudRepository<UserProfile, Long> {
     UserProfile findByUser(User user);
     List<UserProfile> findByKeywords_KeywordContainingIgnoreCase(String keyword);
+    // шукає всі профілі, крім вказаного userId
+    List<UserProfile> findByUser_IdNot(Long userId);
+
 }

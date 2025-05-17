@@ -46,6 +46,12 @@ public class UserController {
         }
     }
 
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "redirect:/login";
+    }
+
     @GetMapping("/register")
     public String showRegisterForm() {
         return "register";
@@ -90,8 +96,18 @@ public class UserController {
         if (user == null) {
             return "redirect:/login";
         }
-        model.addAttribute("username", user.getUsername());
-        model.addAttribute("profiles", userRepository.findAll());
+        // 1) Підтягуємо свій профіль із БД
+        UserProfile ownProfile = profileRepository.findByUser(user);
+
+        // 2) Вітання — тепер своє реальне ім'я (як його зберігаєш у UserProfile)
+        model.addAttribute("userName", ownProfile.getName());
+
+        // 3) Список чужих анкет — беремо не User, а UserProfile
+        Iterable<UserProfile> allProfiles = profileRepository.findAll();
+        model.addAttribute("profiles",
+                profileRepository.findByUser_IdNot(user.getId()));
+
         return "home";
+
     }
 }

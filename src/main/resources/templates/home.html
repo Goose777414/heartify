@@ -1,79 +1,51 @@
 <!DOCTYPE html>
 <html lang="uk" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8"/>
     <title>Головна сторінка</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f0f2f5;
-            margin: 0;
-            padding: 20px;
-        }
-        h1 {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .actions, .profiles {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        .card {
-            background: #ffffff;
-            border-radius: 10px;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            width: 200px;
-            transition: transform 0.3s;
-        }
-        .card:hover {
-            transform: scale(1.05);
-        }
-        a.button {
-            display: inline-block;
-            margin-top: 10px;
-            padding: 10px 15px;
-            background-color: #6392f1;
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-        }
-        a.button:hover {
-            background-color: #5c8ee5;
-        }
+        body{font:16px/1.5 Arial,sans-serif;background:#2b2a33;color:#fff;margin:0;padding:20px;}
+        h1{text-align:center;margin-bottom:10px;}
+        .logout-container{text-align:center;margin-bottom:30px;}
+        .actions,.profiles{display:flex;flex-wrap:wrap;justify-content:center;gap:20px;margin-bottom:30px;}
+        .card{background:#4a4857;border-radius:10px;padding:20px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.1);width:200px;transition:transform .3s;}
+        .card:hover{transform:scale(1.05);}
+        a.button{display:inline-block;margin-top:10px;padding:10px 15px;background:#6392f1;color:#fff;text-decoration:none;border-radius:6px;}
+        a.button:hover{background:#5c8ee5;}
     </style>
 </head>
 <body>
-
-<h1>Вітаємо, <span th:text="${username}">Ім'я</span>!</h1>
+<h1>Привіт, <span th:text="${userName}">твоє ім'я</span>!</h1>
+<!-- Кнопка виходу із профілю -->
+<div class="logout-container">
+    <a class="button" th:href="@{/logout}">Вийти</a>
+</div>
 
 <div class="actions">
     <div class="card">
         <h3>Редагувати анкету</h3>
-        <a class="button" href="/profile/edit">Перейти</a>
+        <a class="button" th:href="@{/profile/edit}">Перейти</a>
     </div>
     <div class="card">
         <h3>Шукати друзів</h3>
-        <a class="button" href="/search">Шукати</a>
+        <a class="button" th:href="@{/search}">Шукати</a>
+    </div>
+    <div class="card">
+        <h3>Мій профіль</h3>
+        <a class="button" th:href="@{/profile}">Переглянути</a>
     </div>
     <div class="card">
         <h3>Мої запрошення</h3>
-        <a class="button" href="/invitations">Переглянути</a>
+        <a class="button" th:href="@{/invitations}">Переглянути</a>
     </div>
 </div>
 
-<h2 style="text-align:center;">Нові користувачі</h2>
-
+<h2 style="text-align:center; margin-top:40px;">Анкети</h2>
 <div class="profiles">
     <div class="card" th:each="profile : ${profiles}">
-        <h3 th:text="${profile.username}">Ім'я користувача</h3>
+        <h3 th:text="${profile.name}">Ім'я</h3>
         <a class="button" th:href="@{'/profile/view/' + ${profile.id}}">Переглянути</a>
     </div>
 </div>
-
 </body>
 </html>

@@ -5,60 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Реєстрація</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #2b2a33;
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .container {
-            background: #4a4857;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.1);
-            width: 350px;
-        }
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        form {
-            display: flex;
-            flex-direction: column;
-        }
-        input {
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-        }
-        button {
-            padding: 10px;
-            background-color: #6392f1;
-            border: none;
-            color: white;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        button:hover {
-            background-color: #5c8ee5;
-        }
-        .toggle-link {
-            margin-top: 10px;
-            text-align: center;
-            font-size: 14px;
-            color: #ffffff;
-            cursor: pointer;
-        }
+        body {font-family: Arial, sans-serif;background: #2b2a33;color: white;display: flex;justify-content: center;align-items: center;height: 100vh;margin: 0;}
+        .container {background: #4a4857;padding: 30px;border-radius: 12px;box-shadow: 0 0 15px rgba(0,0,0,0.1);width: 350px;}
+        h2 {text-align: center;margin-bottom: 20px;}
+        form {display: flex;flex-direction: column;}
+        input {padding: 10px;margin-bottom: 15px;border: 1px solid #ccc;border-radius: 6px;}
+        button {padding: 10px;background-color: #6392f1;border: none;color: white;border-radius: 6px;cursor: pointer;font-size: 16px;}
+        button:hover {background-color: #5c8ee5;}
+        .toggle-link {margin-top: 10px;text-align: center;font-size: 14px;color: #ffffff;cursor: pointer;}
     </style>
 </head>
 <body>
-
 <div class="container">
     <h2>Реєстрація</h2>
     <form action="/register" method="POST">
@@ -71,6 +28,5 @@
         <a href="/login" style="color: #ffffff; text-decoration: underline;">Вже є акаунт? Увійти</a>
     </div>
 </div>
-
 </body>
 </html>

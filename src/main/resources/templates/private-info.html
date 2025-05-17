@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Приватна інформація</title>
+    <style>
+        body {font: 16px/1.5 Arial, sans-serif;background: #2b2a33;color: #fff;display: flex;justify-content: center;align-items: center;min-height: 100vh;margin: 0;padding: 20px;}
+        .profile-card {max-width: 400px;background: #4a4857;padding: 30px;border-radius: 12px;box-shadow: 0 0 15px rgba(0,0,0,0.1);text-align: center;}
+        h2 {margin-bottom: 20px;color: #fff;}
+        p {margin: 10px 0;text-align: left;color: #fff;}
+        span {display: inline-block;margin-left: 5px;color: #6392f1;}
+        a.button {display: inline-block;margin-top: 20px;padding: 10px 15px;background: #6392f1;color: #fff;text-decoration: none;border-radius: 6px;font-size: 16px;cursor: pointer;}
+        a.button:hover {background: #5c8ee5;}
+    </style>
+</head>
+<body>
+
+<div class="profile-card">
+    <h2>Приватна інформація</h2>
+    <p><strong>Телефон:</strong><span th:text="${info.phone}">+380...</span></p>
+    <p><strong>Email:</strong><span th:text="${info.email}">example@mail.com</span></p>
+    <p><strong>Адреса:</strong><span th:text="${info.address}">Ваша адреса</span></p>
+    <p><strong>Дата народження:</strong>
+        <span th:if="${info.birthDate != null}" class="value"
+              th:text="${#temporals.format(info.birthDate, 'dd.MM.yyyy')}">01.01.2000</span>
+        <span th:if="${info.birthDate == null}" class="value">не вказано</span>
+    </p>
+
+    <a th:href="@{/profile}" class="button">Назад до профілю</a>
+</div>
+
+</body>
+</html>
