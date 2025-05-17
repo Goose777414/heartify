@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Controller для роботи із запрошеннями між користувачами.
@@ -41,6 +43,14 @@ public class InvitationController {
             return "redirect:/login";
         }
         List<Invitation> invitations = invitationRepository.findByReceiver(current);
+
+        Map<Long, Long> senderProfileIds = invitations.stream()
+                .collect(Collectors.toMap(
+                        Invitation::getId,
+                        inv -> profileRepository.findByUser(inv.getSender()).getId()
+                ));
+        model.addAttribute("senderProfileIds", senderProfileIds);
+
         model.addAttribute("invitations", invitations);
         return "invitations";
     }

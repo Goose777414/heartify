@@ -30,6 +30,12 @@
         <td th:text="${inv.sender.username}">sender</td>
         <td th:text="${inv.accepted} ? 'Прийнято' : 'Очікується'">status</td>
         <td>
+            <!-- переглянути профіль -->
+            <a class="button"
+               th:href="@{/profile/view/{pid}(pid=${senderProfileIds[inv.id]})}">
+                Переглянути профіль
+            </a>
+            <!-- прийняти/відхилити -->
             <a th:if="${!inv.accepted}"
                class="button"
                th:href="@{/invitations/{id}/accept(id=${inv.id})}">
