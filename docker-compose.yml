@@ -14,5 +14,17 @@ services:
     volumes:
       - mysql-data:/var/lib/mysql
 
+  spring-app:
+      image: heartify/01:latest
+      container_name: spring-container
+      restart: always
+      ports:
+        - "8080:8080"
+      depends_on:
+        - mysql
+      environment:
+        SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/heartify
+        SPRING_DATASOURCE_USERNAME: root
+        SPRING_DATASOURCE_PASSWORD: root
 volumes:
   mysql-data:
